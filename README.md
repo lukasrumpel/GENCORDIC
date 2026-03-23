@@ -9,7 +9,7 @@ The architecture utilizes an iterative **word-serial approach**. By feeding the 
 * **Language:** VHDL-2008 (utilizing `numeric_std` and `signed`)
 * **Architecture:** Iterative / Word-Serial (Multi-Cycle)
 * **Data Type:** Fixed-point (parameterizable via `DATAWIDTH`)
-* **Target Hardware Reference (Xilinx Series-7 (from Spartan-7 upwards!) as 16 Bit Implementation):**
+* **Target Hardware Reference (Xilinx Series-7 (from Spartan-7 upwards!)):**
   * **System Clock:** >= 250 MHz
   * **LUTs:** ~500 (at 16-bit data width)
   * **Flip-Flops:** ~270 (at 16-bit data width)
