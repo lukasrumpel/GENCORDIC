@@ -13,7 +13,6 @@ The architecture utilizes an iterative **word-serial approach**. By feeding the 
   * **System Clock:** >= 250 MHz
   * **LUTs:** ~500 (at 16-bit data width)
   * **Flip-Flops:** ~270 (at 16-bit data width)
-  * **DSP Slices:** Varies based on synthesis tool inference (DSP48 mapping supported).
 
 ## Interfaces (Ports)
 
