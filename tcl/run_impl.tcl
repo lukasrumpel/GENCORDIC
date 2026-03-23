@@ -1,8 +1,8 @@
 
 set top_module "GENCORDIC"
-#set part_number "xc7a100tcsg324-2"
+set part_number "xc7a100tcsg324-2"
 #set part_number "xc7a35ticsg324-1L"
-set part_number "xc7s6cpga196-2"
+#set part_number "xc7s6cpga196-2"
 #set part_number "xcau25p-sfvb784-2-e"
 
 set view_rtl 0
@@ -42,6 +42,10 @@ place_design ;#-directive Explore
 phys_opt_design ;#-directive AggressiveExplore
 route_design -directive NoTimingRelaxation
 phys_opt_design -directive Explore
+
+report_design_analysis -max_paths 10 -setup -file ./build/design_analysis.rpt
+report_design_analysis -logic_level_distribution -file ./build/logic_levels.rpt
+report_design_analysis -complexity -file ./build/complexity.rpt
 
 set_param project.isImplRun true
 generate_parallel_reports -reports { \

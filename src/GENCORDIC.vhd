@@ -61,7 +61,23 @@ begin
     CONTROLLER : process(CLK) is 
     begin
         if (rising_edge(CLK)) then
-            if (RESET = '0') then
+            if (RESET = '1') then
+                xREG <= (others => '0');
+                yREG <= (others => '0');
+                zREG <= (others => '0');
+                X_OUT <= (others => '0');
+                Y_OUT <= (others => '0');
+                Z_OUT <= (others => '0');
+                ItCNT <= 0;
+                BUSY <= '0';
+                COMPUTEFLAG <= '0';
+                FSMCONTROLSTATE <= IDLE;
+                MUReg <= "00";
+                MODEReg <= '0';
+                XSignReg <= '0';
+                YSignReg <= '0';
+                ZSignReg <= '0';          
+            else
                 case (FSMCONTROLSTATE) is
                     when IDLE =>
                         if (START = '1') then
@@ -208,22 +224,7 @@ begin
                         FSMCONTROLSTATE <= IDLE;
                         BUSY <= '0';
                 end case;
-            else
-                xREG <= (others => '0');
-                yREG <= (others => '0');
-                zREG <= (others => '0');
-                X_OUT <= (others => '0');
-                Y_OUT <= (others => '0');
-                Z_OUT <= (others => '0');
-                ItCNT <= 0;
-                BUSY <= '0';
-                COMPUTEFLAG <= '0';
-                FSMCONTROLSTATE <= IDLE;
-                MUReg <= "00";
-                MODEReg <= '0';
-                XSignReg <= '0';
-                YSignReg <= '0';
-                ZSignReg <= '0'; 
+
             end if;
         end if;
     end process;

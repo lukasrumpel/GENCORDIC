@@ -1,6 +1,6 @@
 *log
 *.jou
-build
+#build
 *str
 *ghw
 *gtkw

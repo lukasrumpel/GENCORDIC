@@ -42,16 +42,10 @@ function [xO, yO, zO] = GENCORDIC_SF(x, y, z, u, mode, iterations)
     
     K = prod(sqrt(1+2.^(-2*potVect)));
     Kp = prod(sqrt(1-2.^(-2*potVect(2:end))));
-    
-    % if (u == -1 && mode == 1)
-    %     xReg = abs(x);
-    %     yReg = abs(y);
-    %     zReg = abs(z);
-    % else
+
     xReg = (x);
     yReg = (y);
     zReg = (z);
-    %end
     
     if (u == 1)
         lookUp = atan(itVect);
@@ -60,7 +54,7 @@ function [xO, yO, zO] = GENCORDIC_SF(x, y, z, u, mode, iterations)
     else
         itVect = 0:iterations-1;
         itVect = 2.^(-itVect);
-        itVect(1) = 0; % Verhindert Infinity bei atanh(1)
+        itVect(1) = 0;
         lookUp = atanh(itVect);
     end
 
@@ -77,7 +71,7 @@ function [xO, yO, zO] = GENCORDIC_SF(x, y, z, u, mode, iterations)
         else
             idx = i-1;
         end
-        %get sign aka d
+
         if (mode == 0)
             if (zReg >= 0)
                 d = 1;
@@ -100,12 +94,9 @@ function [xO, yO, zO] = GENCORDIC_SF(x, y, z, u, mode, iterations)
         yReg = yRegN;
         zReg = zRegN;
 
-        %if ((u == -1) && ((i == 4) || (i == 13) || (i == 40)) && (repeat == 0))
-        %    repeat = 1;
-        %else
-            i = i + 1;
-        %    repeat = 0;
-        %end
+
+        i = i + 1;
+
         fprintf(fid, "-----------------------------\n");
         fprintf(fid, "  iteration: %d \n", iterations-idx);
         fprintf(fid, "-----------------------------\n");

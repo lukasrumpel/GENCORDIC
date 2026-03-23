@@ -90,7 +90,7 @@ begin
         variable v_xin, v_yin, v_zin : integer;
         variable v_xout, v_yout, v_zout : integer;
         variable v_mu   : std_logic_vector(1 downto 0);
-        variable v_mode : std_logic; -- '0' oder '1' kann TextIO auch direkt lesen!
+        variable v_mode : std_logic;
     begin
         wait for 100 ns;
         while not endfile(file_VECTORS) loop
