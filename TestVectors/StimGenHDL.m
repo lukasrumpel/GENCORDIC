@@ -12,35 +12,35 @@ if (vectorMode == 1)
     
     
     % 1. Circular Vectoring (1, 0)
-    xVec(2, :) = ones(1, N);
-    yVec(2, :) = linspace(-1, 1, N);
+    xVec(2, :) = rand(1 , N);
+    yVec(2, :) = linspace(-1*rand(1), 1*rand(1), N);
     zVec(2, :) = zeros(1, N);
     
     % 2. Circular Rotation (1, 1)
-    xVec(1, :) = ones(1, N);
+    xVec(1, :) = rand(1, N);
     yVec(1, :) = zeros(1, N);
-    zVec(1, :) = linspace(-pi/2, pi/2, N);
+    zVec(1, :) = (pi * rand(1, N) - pi/2) .* xVec(1, :) * 0.99;
     
     % 3. Linear Vectoring (0, 0)
-    xVec(4, :) = ones(1, N);
-    yVec(4, :) = linspace(-1, 1, N);
+    xVec(4, :) = 0.5 + 0.5 * rand(1, N);
+    yVec(4, :) = (2 * rand(1, N) - 1) .* xVec(4, :) * 0.99;
     zVec(4, :) = zeros(1, N);
     
     % 4. Linear Rotation (0, 1)
-    xVec(3, :) = ones(1, N) * 0.5;
+    xVec(3, :) = rand(1, N);
     yVec(3, :) = zeros(1, N);
-    zVec(3, :) = linspace(-1, 1, N);
+    zVec(3, :) = linspace(-1*rand(1), 1*rand(1), N);
     
     % 5. Hyperbolic Vectoring (-1, 0)
-    w_sweep    = linspace(0.1, 1, N);
+    w_sweep    = (2 * rand(1, N) - 1);
     xVec(6, :) = w_sweep + 0.25;
     yVec(6, :) = w_sweep - 0.25;
     zVec(6, :) = zeros(1, N);
     
     % 6. Hyperbolic Rotation (-1, 1)
-    xVec(5, :) = 0.5*ones(1, N);
+    xVec(5, :) = 0.5*rand(1, N);
     yVec(5, :) = zeros(1, N);
-    zVec(5, :) = linspace(-1, 1, N);
+    zVec(5, :) = (2 * rand(1, N) - 1) .* xVec(5, :) * 0.99;
 
 else
     N = 1;

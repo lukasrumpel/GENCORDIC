@@ -1,6 +1,6 @@
 GHDL = ghdl
 DESIGN_UNIT = GENCORDIC_TB
-VHDL_FILES = src/CORDICPackage.vhd src/GENCORDIC.vhd src/GENCORDIC_TB.vhd 
+VHDL_FILES = src/CORDICPackage.vhd src/GENCORDIC.vhd sim/GENCORDIC_TB.vhd 
 RTIME = 750us
 
 VIVADO_EXECUTABLE = vivado
