@@ -4,7 +4,7 @@ VHDL_FILES = src/CORDICPackage.vhd src/GENCORDIC.vhd src/GENCORDIC_TB.vhd
 RTIME = 750us
 
 VIVADO_EXECUTABLE = vivado
-#/home/lukasrumpel/Software/Vivado/2025.2/Vivado/bin/vivado  
+
 VIVADO_FLOW = PERFORMANCE
 
 # Optional: Eine gespeicherte Ansicht (wenn vorhanden)
