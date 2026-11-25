@@ -41,7 +41,7 @@ architecture arch of GENCORDIC_TB is
     signal MODEARR : MODEARR_T := ('0', '1');
     signal testCNT : integer range 0 to numOfTestVals := 0;
     signal TB_OK : bit := '1';
-    constant residuum : signed(DATAWIDTH-1 downto 0) := X"00_08";
+    constant residuum : signed(DATAWIDTH-1 downto 0) := X"00_0C";
     constant residuumHyperbolic : signed(DATAWIDTH-1 downto 0) := X"00_C6";
     constant residuumATAN : signed(DATAWIDTH-1 downto 0) := X"00_09";
     --constant residuum : signed(DATAWIDTH-1 downto 0) := X"00_00_00_84";

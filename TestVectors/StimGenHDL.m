@@ -6,41 +6,88 @@ if (vectorMode == 1)
     
     N = 101;
     
+    z_circ_max    = (pi / 2) * 0.99;
+    z_hyp_max     = 1.0;
+    hyp_ratio_max = 0.75;
+
+    
+
     xVec = zeros(6, N);
     yVec = zeros(6, N);
     zVec = zeros(6, N);
     
     
-    % 1. Circular Vectoring (1, 0)
-    xVec(2, :) = rand(1 , N);
-    yVec(2, :) = linspace(-1*rand(1), 1*rand(1), N);
+    % % 1. Circular Vectoring (1, 0)
+    xVec(2, :) = (2 * rand(1, N) - 1) * 0.99;
+    yVec(2, :) = (2 * rand(1, N) - 1) * 0.99;
     zVec(2, :) = zeros(1, N);
     
-    % 2. Circular Rotation (1, 1)
-    xVec(1, :) = rand(1, N);
-    yVec(1, :) = zeros(1, N);
-    zVec(1, :) = (pi * rand(1, N) - pi/2) .* xVec(1, :) * 0.99;
+    % % 2. Circular Rotation (1, 1)
+    cv_x = [ 0.5, -0.5,  0.0,  0.0, -0.5,  -0.5,   0.5, -0.7];
+    cv_y = [ 0.0,  0.0,  0.5, -0.5,  1e-4, -1e-4, -1e-4, -0.7];
+    xVec(2, 1:numel(cv_x)) = cv_x;
+    yVec(2, 1:numel(cv_y)) = cv_y;
+
+    xVec(1, :) = (2 * rand(1, N) - 1) * 0.99;
+    yVec(1, :) = (2 * rand(1, N) - 1) * 0.99;
+    zVec(1, :) = (2 * rand(1, N) - 1) * z_circ_max;
     
-    % 3. Linear Vectoring (0, 0)
-    xVec(4, :) = 0.5 + 0.5 * rand(1, N);
-    yVec(4, :) = (2 * rand(1, N) - 1) .* xVec(4, :) * 0.99;
+
+    % % 3. Linear Vectoring (0, 0)
+    cr_x = [ 0.5,  0.5,         0.5,       -0.5,  0.5, -0.5];
+    cr_y = [ 0.0,  0.0,         0.0,        0.0, -0.5, -0.5];
+    cr_z = [ 0.0,  z_circ_max, -z_circ_max, pi/4, -pi/3, 0.0];
+    xVec(1, 1:numel(cr_x)) = cr_x;
+    yVec(1, 1:numel(cr_y)) = cr_y;
+    zVec(1, 1:numel(cr_z)) = cr_z;
+
+    sgn_lv     = 2 * randi([0, 1], 1, N) - 1;
+    xVec(4, :) = sgn_lv .* (0.5 + 0.5 * rand(1, N));
+    yVec(4, :) = (2 * rand(1, N) - 1) .* abs(xVec(4, :)) * 0.99;
     zVec(4, :) = zeros(1, N);
     
-    % 4. Linear Rotation (0, 1)
-    xVec(3, :) = rand(1, N);
-    yVec(3, :) = zeros(1, N);
-    zVec(3, :) = linspace(-1*rand(1), 1*rand(1), N);
+     
+    % % 4. Linear Rotation (0, 1)
+    lv_x = [ 0.5, -0.5,  0.5,   0.5,  -0.5,  -0.5];
+    lv_y = [ 0.0,  0.0,  0.495, -0.495, 0.495, -0.495];
+    xVec(4, 1:numel(lv_x)) = lv_x;
+    yVec(4, 1:numel(lv_y)) = lv_y;
     
-    % 5. Hyperbolic Vectoring (-1, 0)
-    w_sweep    = (2 * rand(1, N) - 1);
-    xVec(6, :) = w_sweep + 0.25;
-    yVec(6, :) = w_sweep - 0.25;
+    xVec(3, :) = (2 * rand(1, N) - 1) * 0.99;
+    yVec(3, :) = (2 * rand(1, N) - 1) * 0.5;
+    zVec(3, :) = (2 * rand(1, N) - 1) * 0.99;
+
+    % 
+    % % 5. Hyperbolic Vectoring (-1, 0)
+    lr_x = [ 0.5,  0.0, -0.5, -0.5,  0.5];
+    lr_y = [ 0.0,  0.5,  0.0,  0.25, -0.5];
+    lr_z = [ 0.0,  0.75, 0.99, -0.99, 0.5];
+    xVec(3, 1:numel(lr_x)) = lr_x;
+    yVec(3, 1:numel(lr_y)) = lr_y;
+    zVec(3, 1:numel(lr_z)) = lr_z;
+
+    sgn_hv     = 2 * randi([0, 1], 1, N) - 1;
+    xVec(6, :) = sgn_hv .* (0.25 + 0.75 * rand(1, N));
+    yVec(6, :) = (2 * rand(1, N) - 1) .* abs(xVec(6, :)) * hyp_ratio_max;
     zVec(6, :) = zeros(1, N);
-    
-    % 6. Hyperbolic Rotation (-1, 1)
-    xVec(5, :) = 0.5*rand(1, N);
-    yVec(5, :) = zeros(1, N);
-    zVec(5, :) = (2 * rand(1, N) - 1) .* xVec(5, :) * 0.99;
+
+    % 
+    % % 6. Hyperbolic Rotation (-1, 1)
+    hv_x = [ 0.5, -0.5,  0.5,                 0.5,                -0.5,                -0.5];
+    hv_y = [ 0.0,  0.0,  0.5 * hyp_ratio_max, -0.5 * hyp_ratio_max, 0.5 * hyp_ratio_max, -0.5 * hyp_ratio_max];
+    xVec(6, 1:numel(hv_x)) = hv_x;
+    yVec(6, 1:numel(hv_y)) = hv_y;
+
+    xVec(5, :) = (2 * rand(1, N) - 1) * 0.5;
+    yVec(5, :) = (2 * rand(1, N) - 1) * 0.5;
+    zVec(5, :) = (2 * rand(1, N) - 1) * z_hyp_max;
+
+    hr_x = [ 0.5,  0.5,        0.5,       -0.5,  -0.5];
+    hr_y = [ 0.0,  0.0,        0.0,        0.25, -0.25];
+    hr_z = [ 0.0,  z_hyp_max, -z_hyp_max,  0.75, -0.75];
+    xVec(5, 1:numel(hr_x)) = hr_x;
+    yVec(5, 1:numel(hr_y)) = hr_y;
+    zVec(5, 1:numel(hr_z)) = hr_z;
 
 else
     N = 1;

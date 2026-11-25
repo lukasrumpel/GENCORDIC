@@ -113,9 +113,13 @@ function [xO, yO, zO] = GENCORDIC_SF(x, y, z, u, mode, iterations)
             if (mode == 0)
                 zO = zReg;
             else
-                zO = mod(zReg + 1e-9, 2*pi);
+                xO = abs(xO); % weil VHDL fuer Betrag in Q1 faltet
+                if (x < 0)
+                    zO = mod(zReg + pi, 2*pi);
+                else
+                    zO = mod(zReg + 1e-9, 2*pi);
+                end
             end
-            
     elseif (u == -1)
             xO = xReg*2;
             yO = yReg*2;
