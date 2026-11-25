@@ -6,7 +6,7 @@ use work.CORDICPackage.all;
 
 
 entity GENCORDIC is
-    generic(
+generic(
         DATAWIDTH : natural range 4 to 32 := 32
     );
     port (
@@ -27,6 +27,7 @@ entity GENCORDIC is
 end GENCORDIC ; 
 
 architecture RTL of GENCORDIC is
+    signal XIN_REG, YIN_REG, ZIN_REG : signed(DATAWIDTH-1 downto 0);
     signal xREG : signed(DATAWIDTH downto 0);
     signal yREG : signed(DATAWIDTH downto 0);
     signal zREG : signed(DATAWIDTH downto 0);
@@ -89,10 +90,16 @@ begin
                             YSignReg <= Y_IN(DATAWIDTH-1);
                             ZSignReg <= Z_IN(DATAWIDTH-1);
                             iterationArrLUTRow <= ITERATIONS/4;
+                            XIN_REG <= X_IN;
+                            YIN_REG <= Y_IN;
+                            ZIN_REG <= Z_IN;
                         else
                             xREG <= (others => '0');
                             yREG <= (others => '0');
                             zREG <= (others => '0');
+                            XIN_REG <= (others => '0');
+                            YIN_REG <= (others => '0');
+                            ZIN_REG <= (others => '0');
                             BUSY <= '0';
                             COMPUTEFLAG <= '0';
                             yZERO <= '0';
@@ -101,16 +108,16 @@ begin
                         FSMCONTROLSTATE <= STARTCOMPUTATION;
                         if ((MODEReg = '1') and (MUReg = "01")) then
                             case(XSignReg) is
-                                when '1' => xREG <= resize(-X_IN, DATAWIDTH+1);
-                                when others => xREG <= resize(X_IN, DATAWIDTH+1);
+                                when '1' => xREG <= -resize(XIN_REG, DATAWIDTH+1);
+                                when others => xREG <= resize(XIN_REG, DATAWIDTH+1);
                             end case;
                             case(YSignReg) is 
-                                when '1' => yREG <= resize(-Y_IN, DATAWIDTH+1);
-                                when others => yREG <= resize(Y_IN, DATAWIDTH+1);
+                                when '1' => yREG <= -resize(YIN_REG, DATAWIDTH+1);
+                                when others => yREG <= resize(YIN_REG, DATAWIDTH+1);
                             end case;
                             case(ZSignReg) is 
-                                when '1' => zREG <= resize(-Z_IN,DATAWIDTH+1);
-                                when others => zREG <= resize(Z_IN, DATAWIDTH+1) ;
+                                when '1' => zREG <= -resize(ZIN_REG,DATAWIDTH+1);
+                                when others => zREG <= resize(ZIN_REG, DATAWIDTH+1) ;
                             end case;
                             if (Y_IN(DATAWIDTH/2-1 downto 0) = 0) then 
                                 yZEROL <= '1';
@@ -123,9 +130,9 @@ begin
                                 yZEROH <= '0';
                             end if;
                         else 
-                            xREG <= RESIZE(X_IN, DATAWIDTH+1);
-                            yREG <= RESIZE(Y_IN, DATAWIDTH+1);
-                            zREG <= RESIZE(Z_IN, DATAWIDTH+1);
+                            xREG <= RESIZE(XIN_REG, DATAWIDTH+1);
+                            yREG <= RESIZE(YIN_REG, DATAWIDTH+1);
+                            zREG <= RESIZE(ZIN_REG, DATAWIDTH+1);
                         end if;
 
                         if (MUReg = "01") then
@@ -201,13 +208,13 @@ begin
                         elsif ((YSignReg = '1') and (XSignReg = '1')) then -- quadrant III
                             zREGPip(DATAWIDTH-1 downto 0) <= zREGPipQ3;
                         else --quadrant I
-                            zREGPip(DATAWIDTH-1 downto 0) <= resize(zREG srl 2, DATAWIDTH);
+                            zREGPip(DATAWIDTH-1 downto 0) <= resize(zREG sra 2, DATAWIDTH);
                         end if;
                     when OUTPUTRES =>
                         if (MUReg = "01") then
                             X_OUT <= xREG(DATAWIDTH downto 1);
                             Y_OUT <= yREG(DATAWIDTH downto 1);
-                            if (yZERO = '1' and MODEReg = '1') then
+                            if (yZERO = '1' and MODEReg = '1' and XSignReg /= '1') then
                                 Z_OUT <= (others => '0');
                             else
                                 Z_OUT <= zREGPip;
@@ -237,8 +244,8 @@ begin
                 -- actual pipeline 
                 ----------------------------------- 
                 if (PipStageCNT = 0) then
-                    shiftedY <= SHIFT_RIGHT(yReg, current_shift);
-                    shiftedX <= SHIFT_RIGHT(xREG, current_shift);
+                    shiftedY <= yReg sra current_shift;
+                    shiftedX <= xREG sra current_shift;
                     case (MUReg) is
                         when "01" =>
                             lookUpVal <= ATANLUTARR(current_shift)(MAXDATAWIDTH-1 downto (MAXDATAWIDTH-DATAWIDTH));
@@ -296,12 +303,12 @@ begin
 
     --ctrlVec <= (MUReg & d);
     
-    YN <= resize(yREG + shiftedX, DATAWIDTH+2) when (d = '0') else resize(yREG - shiftedX, DATAWIDTH+2);
-    XN <= resize(xREG - shiftedY, DATAWIDTH+2) when ((ctrlVec = "111") or (ctrlVec = "010")) else resize(xReg, DATAWIDTH+2) when ((ctrlVec = "000") or (ctrlVec = "001")) else resize(xREG + shiftedY, DATAWIDTH+2);
-    ZN <= resize(zREG - lookUpVal, DATAWIDTH+2) when (d = '0') else resize(zREG + lookUpVal, DATAWIDTH+2);
+    YN <= resize(yREG, DATAWIDTH+2) + resize(shiftedX, DATAWIDTH+2) when (d = '0') else resize(yREG - shiftedX, DATAWIDTH+2);
+    XN <= resize(xREG, DATAWIDTH+2) - resize(shiftedY, DATAWIDTH+2) when ((ctrlVec = "111") or (ctrlVec = "010")) else resize(xReg, DATAWIDTH+2) when ((ctrlVec = "000") or (ctrlVec = "001")) else resize(xREG, DATAWIDTH+2) + resize(shiftedY, DATAWIDTH+2);
+    ZN <= resize(zREG, DATAWIDTH+2) - resize(lookUpVal, DATAWIDTH+2) when (d = '0') else resize(zREG, DATAWIDTH+2) + resize(lookUpVal, DATAWIDTH+2);
     
-    zREGPipQ2 <= PI(MAXDATAWIDTH-1 downto MAXDATAWIDTH-DATAWIDTH) - resize(zREG srl 2, DATAWIDTH);
-    zREGPipQ3 <= PI(MAXDATAWIDTH-1 downto MAXDATAWIDTH-DATAWIDTH) + resize(zREG srl 2, DATAWIDTH);
-    zREGPipQ4 <= TWOPI(MAXDATAWIDTH-1 downto MAXDATAWIDTH-DATAWIDTH) - resize(zREG srl 2, DATAWIDTH);
+    zREGPipQ2 <= PI(MAXDATAWIDTH-1 downto MAXDATAWIDTH-DATAWIDTH) - resize(zREG sra 2, DATAWIDTH);
+    zREGPipQ3 <= PI(MAXDATAWIDTH-1 downto MAXDATAWIDTH-DATAWIDTH) + resize(zREG sra 2, DATAWIDTH);
+    zREGPipQ4 <= TWOPI(MAXDATAWIDTH-1 downto MAXDATAWIDTH-DATAWIDTH) - resize(zREG sra 2, DATAWIDTH);
            
 end architecture ; 
